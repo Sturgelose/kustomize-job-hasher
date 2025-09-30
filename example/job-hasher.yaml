@@ -1,0 +1,8 @@
+apiVersion: examples.config.kubernetes.io/v1beta1
+kind: job-hasher
+metadata:
+  name: job-hasher
+  annotations:
+    config.kubernetes.io/function: |-
+      container:
+        image: ghcr.io/sturgelose/kustomize-job-hasher:latest

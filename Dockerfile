@@ -10,8 +10,8 @@ ARG TARGETOS
 ARG TARGETARCH
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /usr/local/bin/kustomize-job-hasher ./
 
-FROM scratch
+FROM alpine:latest
 
 COPY --from=base /usr/local/bin/kustomize-job-hasher .
 
-ENTRYPOINT ["./kustomize-job-hasher"]
+CMD ["./kustomize-job-hasher"]
