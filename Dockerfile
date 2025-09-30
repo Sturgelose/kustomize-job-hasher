@@ -1,12 +1,17 @@
-FROM golang:1.25.1-bookworm
-ENV CGO_ENABLED=0
-WORKDIR /go/src/
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-COPY main.go .
-RUN go build -v -o /usr/local/bin/config-function ./
+# syntax=docker/dockerfile:1.4
+FROM --platform=$BUILDPLATFORM golang:1.25.1-alpine as base
 
-FROM alpine:latest
-COPY --from=0 /usr/local/bin/config-function /usr/local/bin/config-function
-CMD ["config-function"]
+WORKDIR /app
+
+COPY . .
+RUN go mod download
+
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o /usr/local/bin/kustomize-job-hasher ./
+
+FROM scratch
+
+COPY --from=base /usr/local/bin/kustomize-job-hasher .
+
+ENTRYPOINT ["./kustomize-job-hasher"]
